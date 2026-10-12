@@ -1,0 +1,2612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>原电池工作原理微观实验</title>
+  <style>
+:root {
+  --bg0: #0c181f;
+  --bg1: #152e38;
+  --panel: rgba(255, 252, 246, 0.97);
+  --ink: #1a242b;
+  --muted: #5a6a74;
+  --line: #d5dde3;
+  --accent: #0f7a6c;
+  --accent-soft: #e6f5f2;
+  --accent-2: #c45c26;
+  --anode: #2f6fed;
+  --cathode: #d9480f;
+  --wire: #222;
+  --ok: #0f7a6c;
+  --shadow: 0 20px 56px rgba(6, 16, 24, 0.42);
+  --shadow-soft: 0 8px 24px rgba(8, 20, 28, 0.12);
+  --font: "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --display: Georgia, "Songti SC", "SimSun", serif;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  background:
+    radial-gradient(1000px 520px at 8% -8%, rgba(42, 120, 118, 0.42), transparent 58%),
+    radial-gradient(780px 460px at 96% 4%, rgba(196, 92, 38, 0.28), transparent 52%),
+    radial-gradient(600px 400px at 50% 100%, rgba(15, 122, 108, 0.12), transparent 60%),
+    linear-gradient(165deg, var(--bg0), var(--bg1) 52%, #0a1419);
+  background-attachment: fixed;
+}
+
+.app {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1.25rem 0 2.5rem;
+}
+
+.top {
+  color: #f4f0e6;
+  margin-bottom: 1rem;
+}
+.top h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  margin: 0 0 0.4rem;
+  line-height: 1.25;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.25);
+}
+.top .sub {
+  margin: 0;
+  color: #d7e0e6;
+  max-width: 40rem;
+  line-height: 1.6;
+  opacity: 0.92;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+.panel {
+  background: var(--panel);
+  border-radius: 18px;
+  padding: 1rem 1.05rem 1.15rem;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+}
+
+.panel h2 {
+  margin: 0 0 0.75rem;
+  font-size: 0.92rem;
+  letter-spacing: 0.06em;
+  color: #3d4f5a;
+  font-weight: 700;
+}
+
+label.field {
+  display: block;
+  margin-bottom: 0.7rem;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+label.field span { display: block; margin-bottom: 0.28rem; }
+select, button {
+  font: inherit;
+}
+select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.55rem 0.65rem;
+  background: linear-gradient(180deg, #fff, #fafbfc);
+  color: var(--ink);
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+select:hover { border-color: #b8c5ce; }
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(15, 122, 108, 0.18);
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.55rem;
+}
+.btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.55rem 0.95rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: transform 0.18s var(--ease), filter 0.18s var(--ease), box-shadow 0.18s var(--ease), background 0.18s var(--ease);
+}
+.btn.primary {
+  background: linear-gradient(165deg, #149484, var(--accent) 55%, #0c6a5e);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(15, 122, 108, 0.35);
+}
+.btn.primary:hover:not(:disabled) {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(15, 122, 108, 0.42);
+}
+.btn.primary:active:not(:disabled) { transform: translateY(0); }
+.btn.ghost {
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.btn.ghost:hover:not(:disabled) {
+  background: #fff;
+  border-color: #b8c5ce;
+}
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.toggles {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--line);
+  display: grid;
+  gap: 0.35rem;
+}
+.toggles label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.88rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.hint {
+  margin: 0.8rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.type-row {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+.type-card {
+  display: block;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 0.65rem 0.75rem 0.7rem 2.1rem;
+  position: relative;
+  cursor: pointer;
+  background: linear-gradient(180deg, #fff, #fbfcfd);
+  transition: border-color 0.22s var(--ease), background 0.22s var(--ease), box-shadow 0.22s var(--ease), transform 0.22s var(--ease);
+}
+.type-card:hover {
+  border-color: #b8c9c6;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+}
+.type-card input {
+  position: absolute;
+  left: 0.7rem;
+  top: 0.85rem;
+  accent-color: var(--accent);
+}
+.type-card:has(input:checked) {
+  border-color: var(--accent);
+  background: linear-gradient(160deg, #f3fbf9, var(--accent-soft));
+  box-shadow: inset 0 0 0 1px rgba(15, 122, 108, 0.28), 0 6px 16px rgba(15, 122, 108, 0.1);
+}
+.type-title {
+  display: block;
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+.type-desc {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.preset-mini {
+  margin-top: 0.75rem;
+  padding-top: 0.65rem;
+  border-top: 1px dashed var(--line);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.preset-mini .linkish {
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0 0.2rem;
+}
+
+.fail-banner {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(247, 243, 234, 0.92);
+  border-radius: 14px;
+}
+/* display:flex 会盖掉原生 [hidden]，导致半透明遮罩一直盖在图上、颜色发灰发淡 */
+.fail-banner[hidden] {
+  display: none !important;
+}
+.fail-banner .fail-box {
+  max-width: 28rem;
+  background: linear-gradient(165deg, #fff8f6, #fff1ee);
+  border: 1.5px solid #e8a199;
+  border-radius: 14px;
+  padding: 1.15rem 1.25rem;
+  color: #641e16;
+  box-shadow: 0 16px 40px rgba(100, 30, 22, 0.18);
+  animation: fail-in 0.35s var(--ease);
+}
+@keyframes fail-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+.fail-banner .fail-box strong {
+  display: block;
+  font-size: 1.15rem;
+  margin-bottom: 0.45rem;
+  color: #c0392b;
+}
+.fail-banner .fail-box p {
+  margin: 0;
+  line-height: 1.55;
+  font-size: 0.95rem;
+}
+.canvas-panel { position: relative; }
+
+.stage-wrap { min-width: 0; }
+.stage-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: baseline;
+  margin-bottom: 0.55rem;
+  color: #f3eee4;
+}
+.stage-head h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-family: var(--display);
+}
+.badge {
+  font-size: 0.78rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.1);
+  color: #efe9dc;
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(6px);
+  letter-spacing: 0.02em;
+}
+
+.canvas-panel {
+  position: relative;
+  overflow: hidden;
+  padding: 0.55rem;
+  background: linear-gradient(160deg, rgba(255,252,245,0.98), rgba(248,244,236,0.95));
+}
+#cell-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: #f7f4ec;
+  border-radius: 12px;
+  border: 1px solid #e4ddd0;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
+}
+
+.sensor-panel {
+  margin-top: 0.75rem;
+}
+.sensor-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.45rem;
+}
+.sensor-panel h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.sensor-live {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  white-space: nowrap;
+}
+#sensor-chart {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.sensor-note {
+  margin: 0.55rem 0 0;
+  font-size: 0.86rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.eq-panel {
+  margin-top: 0.75rem;
+}
+.eq-panel h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+}
+.eq-list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.eq-list li {
+  display: grid;
+  grid-template-columns: 5.2rem 1fr;
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f5f9fa, #eef4f6);
+  font-size: 1.05rem;
+  border: 1px solid rgba(213, 221, 227, 0.7);
+}
+.eq-list .tag {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  line-height: 1.35;
+}
+.eq-list .tag small {
+  display: inline-block;
+  margin-top: 0.12rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  opacity: 0.9;
+}
+.eq-list .tag.anode { color: var(--anode); }
+.eq-list .tag.cathode { color: var(--cathode); }
+.eq-list code {
+  font-family: "Times New Roman", Times, "Nimbus Roman", "Songti SC", serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #1a242b;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+  margin-top: 0.65rem;
+  font-size: 0.8rem;
+  color: #dce5ea;
+}
+.legend i {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  margin-right: 0.3rem;
+  vertical-align: -1px;
+}
+
+.footer-note {
+  margin-top: 1rem;
+  color: #9eb0ba;
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+/* SVG particle labels */
+.particle-label {
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 700;
+  pointer-events: none;
+  paint-order: stroke fill;
+  stroke: rgba(0, 0, 0, 0.28);
+  stroke-width: 2.2px;
+  stroke-linejoin: round;
+}
+.particle .halo {
+  pointer-events: none;
+}
+
+</style>
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <h1>原电池工作原理微观实验</h1>
+      <p class="sub">电子走外电路，离子在溶液里定向迁移；盐桥中的离子迁出到两池，维持电中性。</p>
+    </header>
+
+    <div class="layout">
+      <aside class="panel">
+        <h2>装置类型</h2>
+        <div class="type-row" role="radiogroup" aria-label="装置类型">
+          <label class="type-card">
+            <input type="radio" name="cell-type" id="type-single" value="single" />
+            <span class="type-title">单液原电池</span>
+            <span class="type-desc">一个烧杯 · 一种电解质溶液</span>
+          </label>
+          <label class="type-card">
+            <input type="radio" name="cell-type" id="type-bridge" value="bridge" checked />
+            <span class="type-title">双液原电池</span>
+            <span class="type-desc">两个烧杯 · 盐桥连通</span>
+          </label>
+        </div>
+
+        <h2>电极</h2>
+        <label class="field">
+          <span>左侧电极</span>
+          <select id="left-metal"></select>
+        </label>
+        <label class="field">
+          <span>右侧电极</span>
+          <select id="right-metal"></select>
+        </label>
+
+        <h2>电解质溶液</h2>
+        <div id="bridge-fields">
+          <label class="field">
+            <span>左侧溶液</span>
+            <select id="left-sol"></select>
+          </label>
+          <label class="field">
+            <span>右侧溶液</span>
+            <select id="right-sol"></select>
+          </label>
+        </div>
+        <div id="single-fields" hidden>
+          <label class="field">
+            <span>电解质溶液</span>
+            <select id="single-sol"></select>
+          </label>
+        </div>
+
+        <h2>外电路负载</h2>
+        <label class="field">
+          <span>串联元件</span>
+          <select id="load-type">
+            <option value="ammeter" selected>电流表 A</option>
+            <option value="bulb">小灯泡</option>
+            <option value="fan">小风扇</option>
+            <option value="current-sensor">电流传感器（I–t 曲线）</option>
+            <option value="temp-sensor">温度传感器（T–t 曲线）</option>
+          </select>
+        </label>
+        <p class="hint" style="margin-top:0.35rem">单液电流通常更大但不稳；双液更小、更平稳。</p>
+
+        <div class="btn-row">
+          <button type="button" class="btn primary" id="btn-build">开始演示</button>
+          <button type="button" class="btn ghost" id="btn-fs">全屏</button>
+        </div>
+
+        <h2 style="margin-top:1rem">播放</h2>
+        <div class="btn-row">
+          <button type="button" class="btn primary" id="btn-play" disabled>继续运动</button>
+          <button type="button" class="btn ghost" id="btn-pause" disabled>暂停</button>
+          <button type="button" class="btn ghost" id="btn-reset" disabled>重置</button>
+        </div>
+
+        <div class="toggles">
+          <label><input type="checkbox" id="chk-e" checked /> 显示电子 e⁻</label>
+          <label><input type="checkbox" id="chk-ion" checked /> 显示离子迁移</label>
+          <label><input type="checkbox" id="chk-eq" checked /> 显示方程式</label>
+        </div>
+
+        <p class="hint" id="tip">常用组合：双液 · Zn / ZnSO₄ ‖ Cu / CuSO₄</p>
+
+        <div class="preset-mini">
+          <span>示例：</span>
+          <button type="button" class="linkish" data-preset="zn-cu-bridge">铜锌双液</button>
+          <button type="button" class="linkish" data-preset="zn-cu-single">铜锌单液</button>
+        </div>
+      </aside>
+
+      <section class="stage-wrap">
+        <div class="stage-head">
+          <h2 id="stage-title">装置示意</h2>
+          <span class="badge">课堂示意 · 非精确仿真</span>
+        </div>
+
+        <div class="panel canvas-panel">
+          <div id="fail-banner" class="fail-banner" hidden></div>
+          <svg id="cell-svg" viewBox="0 0 900 520" role="img" aria-label="原电池示意图">
+            <defs id="svg-defs"></defs>
+            <g id="layer-static"></g>
+            <g id="layer-anim"></g>
+          </svg>
+        </div>
+
+        <div class="legend">
+          <span><i style="background:#e74c3c"></i>电子 e⁻（外电路：负极→正极）</span>
+          <span><i style="background:#2f6fed"></i>负极溶解出的阳离子</span>
+          <span><i style="background:#d9480f"></i>正极得电子相关粒子</span>
+          <span><i style="background:#1abc9c"></i>盐桥迁出的阴离子（如 Cl⁻）</span>
+          <span><i style="background:#e67e22"></i>盐桥迁出的阳离子（如 K⁺）</span>
+        </div>
+
+        <div class="panel sensor-panel" id="sensor-panel" hidden>
+          <div class="sensor-head">
+            <h3 id="sensor-title">传感器输出</h3>
+            <span class="sensor-live" id="sensor-live">—</span>
+          </div>
+          <canvas id="sensor-chart" width="900" height="240" aria-label="传感器曲线"></canvas>
+          <p class="sensor-note" id="sensor-note"></p>
+        </div>
+
+        <div class="panel eq-panel" id="eq-box" hidden>
+          <h3>电极反应与总反应</h3>
+          <ul class="eq-list">
+            <li>
+              <span class="tag anode">负极<br /><small>氧化反应</small></span>
+              <code id="eq-anode">—</code>
+            </li>
+            <li>
+              <span class="tag cathode">正极<br /><small>还原反应</small></span>
+              <code id="eq-cathode">—</code>
+            </li>
+            <li><span class="tag">总反应</span><code id="eq-overall">—</code></li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <p class="footer-note">课堂示意 · 非精确仿真 · MIT 开源</p>
+  </div>
+
+  <script>
+/**
+ * 预设反应库 + 能否形成原电池的判断（课堂示意规则）
+ */
+window.CELL_DATA = {
+  metals: {
+    Zn: { id: "Zn", label: "Zn 锌（常用）", E0: -0.76, color: "#8b9098" },
+    Fe: { id: "Fe", label: "Fe 铁（常用）", E0: -0.44, color: "#6e757c" },
+    Cu: { id: "Cu", label: "Cu 铜（常用）", E0: 0.34, color: "#b65c3a" },
+    Ag: { id: "Ag", label: "Ag 银", E0: 0.8, color: "#c5cdd6" },
+    C: { id: "C", label: "C 石墨（惰性）", E0: null, inert: true, color: "#3a3f46" },
+  },
+
+  solutions: {
+    ZnSO4: {
+      id: "ZnSO4",
+      formula: "ZnSO₄",
+      label: "ZnSO₄ 溶液",
+      cation: "Zn²⁺",
+      anion: "SO₄²⁻",
+      fill: "#85c1e9",
+      deposit: "Zn",
+    },
+    CuSO4: {
+      id: "CuSO4",
+      formula: "CuSO₄",
+      label: "CuSO₄ 溶液",
+      cation: "Cu²⁺",
+      anion: "SO₄²⁻",
+      fill: "#5dade2",
+      deposit: "Cu",
+    },
+    FeSO4: {
+      id: "FeSO4",
+      formula: "FeSO₄",
+      label: "FeSO₄ 溶液",
+      cation: "Fe²⁺",
+      anion: "SO₄²⁻",
+      fill: "#7dcea0",
+      deposit: "Fe",
+    },
+    AgNO3: {
+      id: "AgNO3",
+      formula: "AgNO₃",
+      label: "AgNO₃ 溶液",
+      cation: "Ag⁺",
+      anion: "NO₃⁻",
+      fill: "#d5dbdb",
+      deposit: "Ag",
+    },
+    H2SO4: {
+      id: "H2SO4",
+      formula: "稀 H₂SO₄",
+      label: "稀硫酸",
+      cation: "H⁺",
+      anion: "SO₄²⁻",
+      fill: "#85c1e9",
+      deposit: "H2",
+      acid: true,
+    },
+  },
+
+  presets: [
+    {
+      id: "zn-cu-bridge",
+      name: "示例：铜锌双液（盐桥）",
+      type: "bridge",
+      leftMetal: "Zn",
+      leftSol: "ZnSO4",
+      rightMetal: "Cu",
+      rightSol: "CuSO4",
+      salt: "琼脂 KCl 溶液",
+    },
+    {
+      id: "zn-cu-single",
+      name: "示例：铜锌单液（稀硫酸）",
+      type: "single",
+      leftMetal: "Zn",
+      rightMetal: "Cu",
+      solution: "H2SO4",
+      note: "正极上主要是 H⁺ 得电子放出氢气",
+    },
+  ],
+};
+
+/** 溶液中“可被还原微粒”的有效电位（示意用） */
+function reducibleE0(sol, metals) {
+  if (!sol) return null;
+  if (sol.acid) return 0; // H⁺/H₂
+  const dep = sol.deposit;
+  if (dep && metals[dep] && typeof metals[dep].E0 === "number") return metals[dep].E0;
+  return null;
+}
+
+/**
+ * 判断能否形成原电池（课堂规则，非严格电化学计算）
+ * @returns {{ok:true}|{ok:false, message:string}}
+ */
+window.validateCellConfig = function validateCellConfig(cfg) {
+  const { metals, solutions } = window.CELL_DATA;
+  const L = metals[cfg.leftMetal];
+  const R = metals[cfg.rightMetal];
+  if (!L || !R) return { ok: false, message: "请选择左右两侧电极。" };
+
+  if (L.id === R.id) {
+    return {
+      ok: false,
+      message: "无法形成原电池：左右电极相同，没有电势差（活动性差异）。请换成两种不同电极。",
+    };
+  }
+  if (L.inert && R.inert) {
+    return {
+      ok: false,
+      message: "无法形成原电池：两侧都是惰性电极（如石墨），缺少能失电子的活泼金属负极。",
+    };
+  }
+
+  if (cfg.type === "bridge") {
+    const Ls = solutions[cfg.leftSol];
+    const Rs = solutions[cfg.rightSol];
+    if (!Ls || !Rs) return { ok: false, message: "双液装置请分别为左右两边选择电解质溶液。" };
+
+    // 确定负极（更活泼/ E0 更小的金属；惰性不能作负极）
+    let anode, cathode, anodeSide, cathodeSide;
+    if (L.inert) {
+      anode = R;
+      cathode = L;
+      anodeSide = "right";
+      cathodeSide = "left";
+    } else if (R.inert) {
+      anode = L;
+      cathode = R;
+      anodeSide = "left";
+      cathodeSide = "right";
+    } else if (L.E0 < R.E0) {
+      anode = L;
+      cathode = R;
+      anodeSide = "left";
+      cathodeSide = "right";
+    } else {
+      anode = R;
+      cathode = L;
+      anodeSide = "right";
+      cathodeSide = "left";
+    }
+
+    const cathSol = cathodeSide === "left" ? Ls : Rs;
+    const eRed = reducibleE0(cathSol, metals);
+    if (eRed == null) {
+      return {
+        ok: false,
+        message:
+          "无法形成原电池：正极所在一侧的溶液中，缺少合适的得电子微粒（如 H⁺ 或较不活泼金属的阳离子）。",
+      };
+    }
+    if (typeof anode.E0 === "number" && eRed <= anode.E0 + 1e-9) {
+      return {
+        ok: false,
+        message:
+          "无法形成原电池：正极一侧溶液中的阳离子，并不比负极金属更容易得电子，难以发生自发的氧化还原。",
+      };
+    }
+
+    return { ok: true };
+  }
+
+  // 单液
+  const sol = solutions[cfg.solution];
+  if (!sol) return { ok: false, message: "单液装置请选择一种电解质溶液。" };
+
+  let anode;
+  if (L.inert) anode = R;
+  else if (R.inert) anode = L;
+  else anode = L.E0 <= R.E0 ? L : R;
+
+  if (anode.inert) {
+    return { ok: false, message: "无法形成原电池：缺少能失电子的活泼金属电极。" };
+  }
+
+  const eRed = reducibleE0(sol, metals);
+  if (eRed == null) {
+    return {
+      ok: false,
+      message: "无法形成原电池：该电解质溶液中缺少合适的得电子微粒。",
+    };
+  }
+  if (eRed <= anode.E0 + 1e-9) {
+    return {
+      ok: false,
+      message:
+        "无法形成原电池：例如只有较活泼金属的盐溶液时，正极难以得到电子。可改用稀硫酸，或改用含较不活泼金属阳离子的溶液（如 CuSO₄）。",
+    };
+  }
+
+  return { ok: true };
+};
+
+window.buildCellModel = function buildCellModel(cfg) {
+  const check = window.validateCellConfig(cfg);
+  if (!check.ok) {
+    const err = new Error(check.message);
+    err.code = "NO_CELL";
+    throw err;
+  }
+
+  const { metals, solutions } = window.CELL_DATA;
+  const type = cfg.type;
+
+  if (type === "bridge") {
+    const L = metals[cfg.leftMetal];
+    const R = metals[cfg.rightMetal];
+    const Ls = solutions[cfg.leftSol];
+    const Rs = solutions[cfg.rightSol];
+
+    let leftIsAnode;
+    if (L.inert) leftIsAnode = false;
+    else if (R.inert) leftIsAnode = true;
+    else leftIsAnode = L.E0 < R.E0;
+
+    const anode = leftIsAnode
+      ? { side: "left", metal: L, sol: Ls }
+      : { side: "right", metal: R, sol: Rs };
+    const cathode = leftIsAnode
+      ? { side: "right", metal: R, sol: Rs }
+      : { side: "left", metal: L, sol: Ls };
+
+    const aM = anode.metal.id;
+    const cM = cathode.metal.id;
+    const cSol = cathode.sol;
+    let cathRxn;
+    let overall;
+
+    if (cSol.acid) {
+      cathRxn = "2H⁺ + 2e⁻ = H₂↑";
+      overall = `${aM} + 2H⁺ = ${aM}²⁺ + H₂↑`;
+    } else if (cSol.cation === "Ag⁺") {
+      cathRxn = "Ag⁺ + e⁻ = Ag";
+      overall = `${aM} + 2Ag⁺ = ${aM}²⁺ + 2Ag`;
+    } else {
+      cathRxn = `${cSol.cation} + 2e⁻ = ${cSol.deposit}`;
+      overall = `${aM} + ${cSol.cation} = ${aM}²⁺ + ${cSol.deposit}`;
+      if (aM === "Zn" && cSol.deposit === "Cu") overall = "Zn + Cu²⁺ = Zn²⁺ + Cu";
+      if (aM === "Fe" && cSol.deposit === "Cu") overall = "Fe + Cu²⁺ = Fe²⁺ + Cu";
+    }
+
+    const anRxn = aM === "Ag" ? "Ag - e⁻ = Ag⁺" : `${aM} - 2e⁻ = ${aM}²⁺`;
+
+    return {
+      type: "bridge",
+      title: `双液原电池：${L.id} | ${Ls.formula} || ${Rs.formula} | ${R.id}`,
+      left: { metal: L, sol: Ls },
+      right: { metal: R, sol: Rs },
+      anode,
+      cathode,
+      salt: cfg.salt || "琼脂 KCl 溶液",
+      equations: {
+        anode: anRxn,
+        cathode: cathRxn,
+        overall,
+        anodeType: "氧化反应",
+        cathodeType: "还原反应",
+      },
+      flows: {
+        electrons: "anode→cathode",
+        saltAnionTo: "anode",
+        saltCationTo: "cathode",
+        dissolve: anode.side,
+        deposit: cathode.side,
+        mode: cSol.acid ? "acid" : "metal",
+      },
+      tip: "双液：盐桥连通两池。电子经导线负极→正极；盐桥中 Cl⁻ 迁出到负极池、K⁺ 迁出到正极池，维持电中性。",
+    };
+  }
+
+  const L = metals[cfg.leftMetal];
+  const R = metals[cfg.rightMetal];
+  const sol = solutions[cfg.solution];
+
+  let anodeMetal, cathodeMetal, anodeSide;
+  if (L.inert) {
+    anodeMetal = R;
+    cathodeMetal = L;
+    anodeSide = "right";
+  } else if (R.inert) {
+    anodeMetal = L;
+    cathodeMetal = R;
+    anodeSide = "left";
+  } else if (L.E0 <= R.E0) {
+    anodeMetal = L;
+    cathodeMetal = R;
+    anodeSide = "left";
+  } else {
+    anodeMetal = R;
+    cathodeMetal = L;
+    anodeSide = "right";
+  }
+  const cathodeSide = anodeSide === "left" ? "right" : "left";
+
+  const anRxn = `${anodeMetal.id} - 2e⁻ = ${anodeMetal.id}²⁺`;
+  let cathRxn;
+  let overall;
+  let mode;
+  if (sol.acid) {
+    mode = "acid";
+    cathRxn = "2H⁺ + 2e⁻ = H₂↑";
+    overall = `${anodeMetal.id} + 2H⁺ = ${anodeMetal.id}²⁺ + H₂↑`;
+  } else {
+    mode = "metal";
+    const cat = sol.cation;
+    const dep = sol.deposit;
+    cathRxn = cat === "Ag⁺" ? "Ag⁺ + e⁻ = Ag" : `${cat} + 2e⁻ = ${dep}`;
+    overall =
+      cat === "Ag⁺"
+        ? `${anodeMetal.id} + 2Ag⁺ = ${anodeMetal.id}²⁺ + 2Ag`
+        : `${anodeMetal.id} + ${cat} = ${anodeMetal.id}²⁺ + ${dep}`;
+  }
+
+  return {
+    type: "single",
+    title: `单液原电池：${L.id} – ${R.id}（${sol.formula}）`,
+    left: { metal: L, sol },
+    right: { metal: R, sol },
+    solution: sol,
+    anode: { side: anodeSide, metal: anodeMetal, sol },
+    cathode: { side: cathodeSide, metal: cathodeMetal, sol },
+    equations: {
+      anode: anRxn,
+      cathode: cathRxn,
+      overall,
+      anodeType: "氧化反应",
+      cathodeType: "还原反应",
+    },
+    flows: {
+      electrons: "anode→cathode",
+      mode,
+      dissolve: anodeSide,
+      gas: cathodeSide,
+      depositIon: sol.cation,
+      depositAtom: sol.deposit,
+    },
+    tip:
+      mode === "acid"
+        ? "单液：共用一种电解质。负极金属失电子；H⁺ 在正极得电子放出氢气。"
+        : "单液：共用一种电解质。负极金属失电子；溶液中金属阳离子在正极析出。",
+  };
+};
+
+</script>
+<script>
+(function () {
+  const $ = (sel) => document.querySelector(sel);
+  const svgNS = "http://www.w3.org/2000/svg";
+
+  /** 离子相对半径（课堂示意：阴离子明显更大，H⁺ 最小） */
+  const ION_R = {
+    "e⁻": 4.5,
+    "H⁺": 5,
+    "H₂": 7,
+    "Ag⁺": 8,
+    "Cu²⁺": 9,
+    "Zn²⁺": 9.5,
+    "Fe²⁺": 9.5,
+    "K⁺": 11,
+    "Cl⁻": 14,
+    "NO₃⁻": 15,
+    "SO₄²⁻": 17,
+  };
+
+  const ION_COLOR = {
+    "e⁻": "#c0392b",
+    "H⁺": "#8e44ad",
+    "H₂": "#95a5a6",
+    "Ag⁺": "#7f8c8d",
+    "Cu²⁺": "#2980b9",
+    "Zn²⁺": "#3498db",
+    "Fe²⁺": "#27ae60",
+    "K⁺": "#e67e22",
+    "Cl⁻": "#16a085",
+    "NO₃⁻": "#1abc9c",
+    "SO₄²⁻": "#0e6655",
+  };
+
+  const state = {
+    model: null,
+    playing: false,
+    showElectrons: true,
+    showIons: true,
+    showEq: true,
+    loadType: "ammeter",
+    raf: null,
+    t0: 0,
+    particles: [],
+    geom: null,
+    sensor: {
+      elapsed: 0,
+      lastNow: 0,
+      sampleAcc: 0,
+      series: [], // { t, I, T }
+    },
+  };
+
+  const els = {
+    typeSingle: $("#type-single"),
+    typeBridge: $("#type-bridge"),
+    leftMetal: $("#left-metal"),
+    leftSol: $("#left-sol"),
+    rightMetal: $("#right-metal"),
+    rightSol: $("#right-sol"),
+    singleSol: $("#single-sol"),
+    bridgeFields: $("#bridge-fields"),
+    singleFields: $("#single-fields"),
+    loadType: $("#load-type"),
+    btnBuild: $("#btn-build"),
+    btnPlay: $("#btn-play"),
+    btnPause: $("#btn-pause"),
+    btnReset: $("#btn-reset"),
+    btnFs: $("#btn-fs"),
+    title: $("#stage-title"),
+    tip: $("#tip"),
+    failBanner: $("#fail-banner"),
+    svg: $("#cell-svg"),
+    layerStatic: $("#layer-static"),
+    layerAnim: $("#layer-anim"),
+    layerFx: null,
+    eqBox: $("#eq-box"),
+    eqAnode: $("#eq-anode"),
+    eqCathode: $("#eq-cathode"),
+    eqOverall: $("#eq-overall"),
+    chkE: $("#chk-e"),
+    chkIon: $("#chk-ion"),
+    chkEq: $("#chk-eq"),
+    sensorPanel: $("#sensor-panel"),
+    sensorTitle: $("#sensor-title"),
+    sensorLive: $("#sensor-live"),
+    sensorNote: $("#sensor-note"),
+    sensorChart: $("#sensor-chart"),
+  };
+
+  function isSensorLoad(type) {
+    return type === "current-sensor" || type === "temp-sensor";
+  }
+
+  function currentType() {
+    return els.typeBridge.checked ? "bridge" : "single";
+  }
+
+  function fillSelect(sel, map, mapFn) {
+    sel.innerHTML = "";
+    Object.values(map).forEach((item) => {
+      const opt = document.createElement("option");
+      const v = mapFn(item);
+      opt.value = v.value;
+      opt.textContent = v.text;
+      sel.appendChild(opt);
+    });
+  }
+
+  function initControls() {
+    // ensure fx layer exists
+    if (!$("#layer-fx")) {
+      const fx = document.createElementNS(svgNS, "g");
+      fx.setAttribute("id", "layer-fx");
+      els.svg.appendChild(fx);
+    }
+    els.layerFx = $("#layer-fx");
+
+    const { metals, solutions } = window.CELL_DATA;
+    fillSelect(els.leftMetal, metals, (m) => ({ value: m.id, text: m.label }));
+    fillSelect(els.rightMetal, metals, (m) => ({ value: m.id, text: m.label }));
+    fillSelect(els.leftSol, solutions, (s) => ({ value: s.id, text: s.label }));
+    fillSelect(els.rightSol, solutions, (s) => ({ value: s.id, text: s.label }));
+    fillSelect(els.singleSol, solutions, (s) => ({ value: s.id, text: s.label }));
+
+    els.leftMetal.value = "Zn";
+    els.rightMetal.value = "Cu";
+    els.leftSol.value = "ZnSO4";
+    els.rightSol.value = "CuSO4";
+    els.singleSol.value = "H2SO4";
+
+    els.typeSingle.addEventListener("change", syncTypeUI);
+    els.typeBridge.addEventListener("change", syncTypeUI);
+    els.loadType.addEventListener("change", () => {
+      state.loadType = els.loadType.value;
+      resetSensorSeries();
+      syncSensorPanel();
+      if (state.model) {
+        const was = state.playing;
+        pause();
+        drawStatic(state.model);
+        rebuildParticles();
+        updateLoadVisual(false);
+        if (was) play();
+      }
+    });
+    els.btnBuild.addEventListener("click", () => buildFromForm(true));
+    els.btnPlay.addEventListener("click", play);
+    els.btnPause.addEventListener("click", pause);
+    els.btnReset.addEventListener("click", resetAnim);
+    els.btnFs.addEventListener("click", () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+      else document.exitFullscreen?.();
+    });
+    els.chkE.addEventListener("change", () => {
+      state.showElectrons = els.chkE.checked;
+      if (state.model) rebuildParticles();
+    });
+    els.chkIon.addEventListener("change", () => {
+      state.showIons = els.chkIon.checked;
+      if (state.model) rebuildParticles();
+    });
+    els.chkEq.addEventListener("change", () => {
+      state.showEq = els.chkEq.checked;
+      if (state.model) els.eqBox.hidden = !state.showEq;
+    });
+    document.querySelectorAll("[data-preset]").forEach((btn) => {
+      btn.addEventListener("click", () => applyPreset(btn.getAttribute("data-preset")));
+    });
+
+    syncTypeUI();
+    showIdle();
+  }
+
+  function applyPreset(id) {
+    const p = window.CELL_DATA.presets.find((x) => x.id === id);
+    if (!p) return;
+    if (p.type === "bridge") {
+      els.typeBridge.checked = true;
+      els.leftMetal.value = p.leftMetal;
+      els.leftSol.value = p.leftSol;
+      els.rightMetal.value = p.rightMetal;
+      els.rightSol.value = p.rightSol;
+    } else {
+      els.typeSingle.checked = true;
+      els.leftMetal.value = p.leftMetal;
+      els.rightMetal.value = p.rightMetal;
+      els.singleSol.value = p.solution;
+    }
+    syncTypeUI();
+    buildFromForm(true);
+  }
+
+  function syncTypeUI() {
+    const bridge = currentType() === "bridge";
+    els.bridgeFields.hidden = !bridge;
+    els.singleFields.hidden = bridge;
+  }
+
+  function formConfig() {
+    if (currentType() === "bridge") {
+      return {
+        type: "bridge",
+        leftMetal: els.leftMetal.value,
+        leftSol: els.leftSol.value,
+        rightMetal: els.rightMetal.value,
+        rightSol: els.rightSol.value,
+        salt: "琼脂 KCl 溶液",
+      };
+    }
+    return {
+      type: "single",
+      leftMetal: els.leftMetal.value,
+      rightMetal: els.rightMetal.value,
+      solution: els.singleSol.value,
+    };
+  }
+
+  function showIdle() {
+    pause();
+    state.model = null;
+    clearLayer(els.layerStatic);
+    clearLayer(els.layerAnim);
+    if (els.layerFx) clearLayer(els.layerFx);
+    hideFail();
+    resetSensorSeries();
+    syncSensorPanel();
+    els.title.textContent = "装置示意";
+    els.eqBox.hidden = true;
+    els.btnPlay.disabled = true;
+    els.btnPause.disabled = true;
+    els.btnReset.disabled = true;
+  }
+
+  function showFail(message) {
+    pause();
+    state.model = null;
+    clearLayer(els.layerStatic);
+    clearLayer(els.layerAnim);
+    if (els.layerFx) clearLayer(els.layerFx);
+    resetSensorSeries();
+    if (els.sensorPanel) els.sensorPanel.hidden = true;
+    els.failBanner.hidden = false;
+    els.failBanner.removeAttribute("hidden");
+    els.failBanner.style.display = "flex";
+    els.failBanner.innerHTML =
+      '<div class="fail-box"><strong>无法形成原电池</strong><p></p></div>';
+    els.failBanner.querySelector("p").textContent = message;
+    els.title.textContent = "无法形成原电池";
+    els.tip.textContent = "换一组电极或溶液再试。";
+    els.eqBox.hidden = true;
+    els.btnPlay.disabled = true;
+    els.btnPause.disabled = true;
+    els.btnReset.disabled = true;
+  }
+
+  function hideFail() {
+    els.failBanner.hidden = true;
+    els.failBanner.setAttribute("hidden", "");
+    els.failBanner.style.display = "none";
+    els.failBanner.innerHTML = "";
+  }
+
+  function buildFromForm(autoPlay) {
+    state.loadType = els.loadType.value;
+    const cfg = formConfig();
+    const check = window.validateCellConfig(cfg);
+    if (!check.ok) {
+      showFail(check.message);
+      syncSensorPanel();
+      return;
+    }
+    try {
+      const model = window.buildCellModel(cfg);
+      state.model = model;
+      pause();
+      hideFail();
+      resetSensorSeries();
+      drawStatic(model);
+      rebuildParticles();
+      updateEquations(model);
+      updateLoadVisual(false);
+      syncSensorPanel();
+      els.title.textContent = model.title;
+      els.tip.textContent = model.tip;
+      els.btnPlay.disabled = false;
+      els.btnPause.disabled = false;
+      els.btnReset.disabled = false;
+      if (autoPlay !== false) play();
+    } catch (err) {
+      showFail(err.message || "无法形成原电池。");
+      syncSensorPanel();
+    }
+  }
+
+  function updateEquations(model) {
+    els.eqAnode.textContent = model.equations.anode;
+    els.eqCathode.textContent = model.equations.cathode;
+    els.eqOverall.textContent = model.equations.overall;
+    els.eqBox.hidden = !state.showEq;
+  }
+
+  function clearLayer(g) {
+    if (!g) return;
+    while (g.firstChild) g.removeChild(g.firstChild);
+  }
+
+  function el(name, attrs = {}, text) {
+    const node = document.createElementNS(svgNS, name);
+    Object.entries(attrs).forEach(([k, v]) => node.setAttribute(k, String(v)));
+    if (text != null) node.textContent = text;
+    return node;
+  }
+
+  function ensureSvgDefs() {
+    const defs = $("#svg-defs");
+    if (!defs || defs.dataset.ready === "1") return;
+    defs.dataset.ready = "1";
+
+    const glass = el("linearGradient", { id: "beaker-glass", x1: "0", y1: "0", x2: "1", y2: "0" });
+    glass.appendChild(el("stop", { offset: "0%", "stop-color": "#ffffff", "stop-opacity": "0.35" }));
+    glass.appendChild(el("stop", { offset: "45%", "stop-color": "#ffffff", "stop-opacity": "0.05" }));
+    glass.appendChild(el("stop", { offset: "100%", "stop-color": "#2c3e50", "stop-opacity": "0.08" }));
+    defs.appendChild(glass);
+
+    const stageGrad = el("linearGradient", { id: "stage-bg", x1: "0", y1: "0", x2: "0", y2: "1" });
+    stageGrad.appendChild(el("stop", { offset: "0%", "stop-color": "#fbf9f3" }));
+    stageGrad.appendChild(el("stop", { offset: "100%", "stop-color": "#f0ebe1" }));
+    defs.appendChild(stageGrad);
+
+    const softShadow = el("filter", { id: "soft-shadow", x: "-20%", y: "-20%", width: "140%", height: "140%" });
+    softShadow.appendChild(el("feDropShadow", { dx: "0", dy: "2", stdDeviation: "2.2", "flood-color": "#1a242b", "flood-opacity": "0.18" }));
+    defs.appendChild(softShadow);
+
+    const eGlow = el("filter", { id: "e-glow", x: "-80%", y: "-80%", width: "260%", height: "260%" });
+    eGlow.appendChild(el("feGaussianBlur", { stdDeviation: "2.4", result: "b" }));
+    const egMerge = el("feMerge");
+    egMerge.appendChild(el("feMergeNode", { in: "b" }));
+    egMerge.appendChild(el("feMergeNode", { in: "SourceGraphic" }));
+    eGlow.appendChild(egMerge);
+    defs.appendChild(eGlow);
+
+    const ionGlow = el("filter", { id: "ion-glow", x: "-60%", y: "-60%", width: "220%", height: "220%" });
+    ionGlow.appendChild(el("feGaussianBlur", { stdDeviation: "1.6", result: "b" }));
+    const igMerge = el("feMerge");
+    igMerge.appendChild(el("feMergeNode", { in: "b" }));
+    igMerge.appendChild(el("feMergeNode", { in: "SourceGraphic" }));
+    ionGlow.appendChild(igMerge);
+    defs.appendChild(ionGlow);
+  }
+
+  function particleFillId(label, color) {
+    const id = "pfill-" + encodeURIComponent(label).replace(/%/g, "");
+    const defs = $("#svg-defs");
+    if (defs && !document.getElementById(id)) {
+      const rg = el("radialGradient", {
+        id,
+        cx: "32%",
+        cy: "28%",
+        r: "68%",
+        fx: "30%",
+        fy: "26%",
+      });
+      rg.appendChild(el("stop", { offset: "0%", "stop-color": "#ffffff", "stop-opacity": "0.78" }));
+      rg.appendChild(el("stop", { offset: "38%", "stop-color": color, "stop-opacity": "1" }));
+      rg.appendChild(el("stop", { offset: "100%", "stop-color": color, "stop-opacity": "0.92" }));
+      // darken edge via second stop blend — append a deeper rim
+      defs.appendChild(rg);
+      const rim = el("radialGradient", { id: id + "-rim", cx: "50%", cy: "50%", r: "50%" });
+      rim.appendChild(el("stop", { offset: "55%", "stop-color": color, "stop-opacity": "0" }));
+      rim.appendChild(el("stop", { offset: "100%", "stop-color": "#0a1218", "stop-opacity": "0.28" }));
+      defs.appendChild(rim);
+    }
+    return { fill: `url(#${id})`, rim: `url(#${id}-rim)` };
+  }
+
+  function makeParticleNode(p) {
+    const r = ionRadius(p.label);
+    const color = ionColor(p.label);
+    const fills = particleFillId(p.label, color);
+    const node = el("g", { class: "particle" });
+    if (p.kind === "e") node.setAttribute("filter", "url(#e-glow)");
+    else node.setAttribute("filter", "url(#ion-glow)");
+
+    node.appendChild(
+      el("circle", {
+        class: "halo",
+        r: r * 1.55,
+        fill: color,
+        opacity: p.kind === "e" ? 0.22 : 0.16,
+      })
+    );
+    node.appendChild(
+      el("circle", {
+        class: "body",
+        r,
+        fill: fills.fill,
+        stroke: "rgba(255,255,255,0.65)",
+        "stroke-width": 1.15,
+      })
+    );
+    node.appendChild(
+      el("circle", {
+        class: "rim",
+        r,
+        fill: fills.rim,
+      })
+    );
+    node.appendChild(
+      el("ellipse", {
+        class: "spec",
+        cx: -r * 0.28,
+        cy: -r * 0.32,
+        rx: Math.max(1.6, r * 0.34),
+        ry: Math.max(1.2, r * 0.22),
+        fill: "#ffffff",
+        opacity: 0.55,
+      })
+    );
+    const fs = p.label.length > 3 ? 7 : p.kind === "e" ? 8.5 : 9;
+    node.appendChild(
+      el("text", {
+        class: "particle-label",
+        x: 0,
+        y: 3.2,
+        "text-anchor": "middle",
+        fill: "#fff",
+        "font-size": fs,
+        "font-weight": 700,
+      }, p.label)
+    );
+    return node;
+  }
+
+  function liquidGradientId(fill) {
+    const id = "liq-" + String(fill).replace(/[^a-zA-Z0-9]/g, "");
+    const defs = $("#svg-defs");
+    if (defs && !document.getElementById(id)) {
+      const lg = el("linearGradient", { id, x1: "0", y1: "0", x2: "0", y2: "1" });
+      lg.appendChild(el("stop", { offset: "0%", "stop-color": fill, "stop-opacity": "0.42" }));
+      lg.appendChild(el("stop", { offset: "55%", "stop-color": fill, "stop-opacity": "0.62" }));
+      lg.appendChild(el("stop", { offset: "100%", "stop-color": fill, "stop-opacity": "0.78" }));
+      defs.appendChild(lg);
+    }
+    return `url(#${id})`;
+  }
+
+  function metalGradientId(color, key) {
+    const id = "metal-" + key;
+    const defs = $("#svg-defs");
+    if (defs && !document.getElementById(id)) {
+      const lg = el("linearGradient", { id, x1: "0", y1: "0", x2: "1", y2: "0" });
+      lg.appendChild(el("stop", { offset: "0%", "stop-color": "#ffffff", "stop-opacity": "0.35" }));
+      lg.appendChild(el("stop", { offset: "28%", "stop-color": color, "stop-opacity": "1" }));
+      lg.appendChild(el("stop", { offset: "72%", "stop-color": color, "stop-opacity": "1" }));
+      lg.appendChild(el("stop", { offset: "100%", "stop-color": "#000000", "stop-opacity": "0.22" }));
+      defs.appendChild(lg);
+    }
+    return `url(#${id})`;
+  }
+
+  /** 教材风烧杯：透明描边 + 水平液面线（溶液很浅，不挡导线） */
+  function beaker(x, y, w, h, fill, label) {
+    const g = el("g");
+    const liquidTop = y + 42;
+    g.appendChild(
+      el("path", {
+        d: `M${x + 4} ${liquidTop} L${x + 4} ${y + h - 14} Q${x + w / 2} ${y + h + 4} ${x + w - 4} ${y + h - 14} L${x + w - 4} ${liquidTop} Z`,
+        fill: liquidGradientId(fill),
+      })
+    );
+    // 液面高光
+    g.appendChild(
+      el("ellipse", {
+        cx: x + w / 2,
+        cy: liquidTop + 1,
+        rx: w / 2 - 10,
+        ry: 4.5,
+        fill: "#ffffff",
+        opacity: 0.35,
+      })
+    );
+    g.appendChild(
+      el("line", {
+        x1: x + 10,
+        y1: liquidTop,
+        x2: x + w - 10,
+        y2: liquidTop,
+        stroke: "#5dade2",
+        "stroke-width": 1.6,
+        opacity: 0.85,
+      })
+    );
+    for (let i = 0; i < 5; i++) {
+      const ly = liquidTop + 14 + i * 26;
+      if (ly > y + h - 30) break;
+      g.appendChild(
+        el("line", {
+          x1: x + 22,
+          y1: ly,
+          x2: x + w - 22,
+          y2: ly,
+          stroke: "#3498db",
+          "stroke-width": 1.6,
+          opacity: 0.55 + (i % 2) * 0.15,
+        })
+      );
+    }
+    // 杯壁只画到杯口，上方完全敞开，导线绝不穿过杯壁
+    g.appendChild(
+      el("path", {
+        d: `M${x} ${y} L${x} ${y + h - 12} Q${x + w / 2} ${y + h + 10} ${x + w} ${y + h - 12} L${x + w} ${y}`,
+        fill: "none",
+        stroke: "#2c3e50",
+        "stroke-width": 2.4,
+        "stroke-linejoin": "round",
+        "stroke-linecap": "round",
+      })
+    );
+    // 左侧玻璃高光
+    g.appendChild(
+      el("path", {
+        d: `M${x + 7} ${y + 18} L${x + 7} ${y + h - 40}`,
+        fill: "none",
+        stroke: "#ffffff",
+        "stroke-width": 2.2,
+        opacity: 0.45,
+        "stroke-linecap": "round",
+      })
+    );
+    g.appendChild(
+      el("text", {
+        x: x + w / 2,
+        y: y + h + 34,
+        "text-anchor": "middle",
+        "font-size": 15,
+        "font-weight": 700,
+        fill: "#c0392b",
+      }, label)
+    );
+    return { g, liquidTop };
+  }
+
+  /** 电极：顶端明显高于杯口，导线只接在顶端 */
+  function electrodeBar(cx, topY, bottomY, color, label, sign) {
+    const g = el("g", { filter: "url(#soft-shadow)" });
+    const w = 36;
+    g.appendChild(
+      el("rect", {
+        x: cx - w / 2,
+        y: topY,
+        width: w,
+        height: bottomY - topY,
+        rx: 2,
+        fill: metalGradientId(color, label),
+        stroke: "#2c3e50",
+        "stroke-width": 1.1,
+      })
+    );
+    g.appendChild(
+      el("rect", {
+        x: cx - w / 2 + 3,
+        y: topY + 4,
+        width: 4,
+        height: Math.max(20, bottomY - topY - 16),
+        rx: 1,
+        fill: "#ffffff",
+        opacity: 0.22,
+      })
+    );
+    g.appendChild(
+      el("text", {
+        x: cx,
+        y: topY + 22,
+        "text-anchor": "middle",
+        "font-size": 15,
+        "font-weight": 700,
+        fill: "#fff",
+      }, label)
+    );
+    g.appendChild(
+      el("text", {
+        x: cx + w / 2 + 16,
+        y: topY + 18,
+        "font-size": 22,
+        "font-weight": 700,
+        fill: sign === "+" ? "#c0392b" : "#2c3e50",
+      }, sign)
+    );
+    return g;
+  }
+
+  /** 导线：从电极顶端竖直向上，在杯口上方做小弹簧，再水平接到负载——绝不穿进溶液/杯壁 */
+  function leadPath(x, tipY, wireY) {
+    const coilY = tipY - 28;
+    return (
+      `M${x} ${tipY} L${x} ${coilY + 8}` +
+      ` c 7 -3 7 3 0 0 c -7 -3 -7 3 0 0 c 7 -3 7 3 0 0` +
+      ` L${x} ${wireY}`
+    );
+  }
+
+  function drawWireAndLoad(g, leftTop, rightTop, anodeSide) {
+    const wireY = 48;
+    const midX = (leftTop.x + rightTop.x) / 2;
+    const wireG = el("g", { id: "wire-layer" });
+
+    wireG.appendChild(
+      el("path", {
+        d: leadPath(leftTop.x, leftTop.y, wireY),
+        fill: "none",
+        stroke: "#1a1a1a",
+        "stroke-width": 2.5,
+        "stroke-linecap": "round",
+      })
+    );
+    wireG.appendChild(
+      el("path", {
+        d: leadPath(rightTop.x, rightTop.y, wireY),
+        fill: "none",
+        stroke: "#1a1a1a",
+        "stroke-width": 2.5,
+        "stroke-linecap": "round",
+      })
+    );
+    wireG.appendChild(
+      el("line", {
+        x1: leftTop.x,
+        y1: wireY,
+        x2: rightTop.x,
+        y2: wireY,
+        stroke: "#1a1a1a",
+        "stroke-width": 2.5,
+        "stroke-linecap": "round",
+      })
+    );
+
+    // 电子流向（负极→正极）与电流流向（正极→负极）分开标注
+    const eRight = anodeSide === "left";
+    wireG.appendChild(
+      el("text", {
+        x: midX + (eRight ? -78 : 78),
+        y: wireY - 20,
+        "font-size": 13,
+        "font-weight": 700,
+        fill: "#c0392b",
+        "text-anchor": "middle",
+      }, eRight ? "e⁻ →" : "← e⁻")
+    );
+    wireG.appendChild(
+      el("text", {
+        id: "current-arrow-label",
+        x: midX + (eRight ? 78 : -78),
+        y: wireY - 20,
+        "font-size": 12,
+        "font-weight": 700,
+        fill: "#1f618d",
+        "text-anchor": "middle",
+        opacity: 0,
+      }, eRight ? "← I（电流）" : "I（电流） →")
+    );
+
+    const loadG = el("g", { id: "load-device" });
+    if (state.loadType === "ammeter") {
+      loadG.appendChild(
+        el("circle", {
+          cx: midX,
+          cy: wireY,
+          r: 28,
+          fill: "#fff",
+          stroke: "#1a1a1a",
+          "stroke-width": 2.5,
+        })
+      );
+      // 刻度：零点在正上方
+      loadG.appendChild(
+        el("line", {
+          x1: midX,
+          y1: wireY - 28,
+          x2: midX,
+          y2: wireY - 22,
+          stroke: "#7f8c8d",
+          "stroke-width": 1.5,
+        })
+      );
+      loadG.appendChild(
+        el("text", {
+          x: midX,
+          y: wireY + 18,
+          "text-anchor": "middle",
+          "font-size": 16,
+          "font-weight": 700,
+          fill: "#2c3e50",
+        }, "A")
+      );
+      loadG.appendChild(
+        el("line", {
+          id: "meter-needle",
+          x1: midX,
+          y1: wireY,
+          x2: midX,
+          y2: wireY - 18,
+          stroke: "#e74c3c",
+          "stroke-width": 2.8,
+          "stroke-linecap": "round",
+        })
+      );
+      loadG.appendChild(
+        el("circle", {
+          cx: midX,
+          cy: wireY,
+          r: 3,
+          fill: "#e74c3c",
+        })
+      );
+      loadG.appendChild(
+        el("text", {
+          x: midX,
+          y: wireY + 44,
+          "text-anchor": "middle",
+          "font-size": 13,
+          "font-weight": 700,
+          fill: "#c0392b",
+        }, "电流表")
+      );
+    } else if (state.loadType === "bulb") {
+      loadG.appendChild(
+        el("circle", {
+          id: "bulb-glass",
+          cx: midX,
+          cy: wireY,
+          r: 22,
+          fill: "#f5f5f5",
+          stroke: "#1a1a1a",
+          "stroke-width": 2,
+        })
+      );
+      loadG.appendChild(
+        el("path", {
+          d: `M${midX - 8} ${wireY + 8} Q${midX} ${wireY - 10} ${midX + 8} ${wireY + 8}`,
+          fill: "none",
+          stroke: "#555",
+          "stroke-width": 2,
+        })
+      );
+      loadG.appendChild(
+        el("rect", {
+          x: midX - 8,
+          y: wireY + 18,
+          width: 16,
+          height: 8,
+          fill: "#bdc3c7",
+          stroke: "#1a1a1a",
+          "stroke-width": 1,
+        })
+      );
+      loadG.appendChild(
+        el("text", {
+          x: midX,
+          y: wireY + 48,
+          "text-anchor": "middle",
+          "font-size": 13,
+          "font-weight": 700,
+          fill: "#c0392b",
+        }, "小灯泡")
+      );
+    } else if (state.loadType === "fan") {
+      loadG.appendChild(
+        el("circle", {
+          cx: midX,
+          cy: wireY,
+          r: 22,
+          fill: "#ecf0f1",
+          stroke: "#1a1a1a",
+          "stroke-width": 2,
+        })
+      );
+      const blades = el("g", { id: "fan-blades", transform: `translate(${midX},${wireY})` });
+      for (let i = 0; i < 3; i++) {
+        const ang = (i * 120 * Math.PI) / 180;
+        blades.appendChild(
+          el("ellipse", {
+            cx: Math.cos(ang) * 9,
+            cy: Math.sin(ang) * 9,
+            rx: 11,
+            ry: 5,
+            transform: `rotate(${i * 120})`,
+            fill: "#5dade2",
+            stroke: "#1a1a1a",
+            "stroke-width": 1,
+          })
+        );
+      }
+      loadG.appendChild(blades);
+      loadG.appendChild(
+        el("circle", {
+          cx: midX,
+          cy: wireY,
+          r: 3.5,
+          fill: "#2c3e50",
+        })
+      );
+      loadG.appendChild(
+        el("text", {
+          x: midX,
+          y: wireY + 48,
+          "text-anchor": "middle",
+          "font-size": 13,
+          "font-weight": 700,
+          fill: "#c0392b",
+        }, "小风扇")
+      );
+    } else if (isSensorLoad(state.loadType)) {
+      const isI = state.loadType === "current-sensor";
+      loadG.appendChild(
+        el("rect", {
+          x: midX - 34,
+          y: wireY - 18,
+          width: 68,
+          height: 36,
+          rx: 6,
+          fill: "#fff",
+          stroke: "#1a1a1a",
+          "stroke-width": 2,
+        })
+      );
+      loadG.appendChild(
+        el("circle", {
+          id: "sensor-led",
+          cx: midX - 22,
+          cy: wireY,
+          r: 5,
+          fill: "#bdc3c7",
+        })
+      );
+      loadG.appendChild(
+        el("text", {
+          x: midX + 6,
+          y: wireY + 5,
+          "text-anchor": "middle",
+          "font-size": 13,
+          "font-weight": 700,
+          fill: "#1a5276",
+        }, isI ? "I-sensor" : "T-sensor")
+      );
+      loadG.appendChild(
+        el("text", {
+          id: "sensor-device-readout",
+          x: midX,
+          y: wireY + 42,
+          "text-anchor": "middle",
+          "font-size": 12,
+          "font-weight": 700,
+          fill: "#c0392b",
+        }, isI ? "电流传感器" : "温度传感器")
+      );
+    }
+    wireG.appendChild(loadG);
+    g.appendChild(wireG);
+    return { midX, wireY };
+  }
+
+  /**
+   * 课堂示意曲线（平滑、趋势正确，非真实测量）
+   * 单液：I 起始大、单调衰减；T 升温更快更高
+   * 双液：I 小而几乎平稳；T 升温慢且升幅小
+   */
+  function sampleSensorValues(cellType, tSec) {
+    const t = Math.max(0, tSec);
+    if (cellType === "bridge") {
+      const I = 0.28 - 0.02 * (1 - Math.exp(-0.03 * t)); // 略微下降但整体很小很稳
+      const T = 25 + 1.6 * (1 - Math.exp(-0.05 * t)); // 单调升温，不回落
+      return { I, T };
+    }
+    const I = 1.05 * Math.exp(-0.09 * t) + 0.18; // 单调衰减至平台
+    const T = 25 + 5.8 * (1 - Math.exp(-0.065 * t)); // 单调升温，升幅更大
+    return { I, T };
+  }
+
+  function seedSensorSeries() {
+    state.sensor.elapsed = 0;
+    state.sensor.lastNow = 0;
+    state.sensor.sampleAcc = 0;
+    state.sensor.series = [];
+    if (state.model && isSensorLoad(state.loadType)) {
+      const v0 = sampleSensorValues(state.model.type, 0);
+      state.sensor.series.push({ t: 0, I: v0.I, T: v0.T });
+      updateSensorLive(v0);
+    }
+  }
+
+  function resetSensorSeries() {
+    seedSensorSeries();
+    drawSensorChart();
+    if (!state.model || !isSensorLoad(state.loadType)) {
+      if (els.sensorLive) els.sensorLive.textContent = "—";
+    }
+    const readout = $("#sensor-device-readout");
+    if (readout && isSensorLoad(state.loadType) && !state.playing) {
+      // 保留标签；有读数时 updateSensorLive 会覆盖
+      if (!state.sensor.series.length) {
+        readout.textContent =
+          state.loadType === "current-sensor" ? "电流传感器" : "温度传感器";
+      }
+    }
+  }
+
+  function syncSensorPanel() {
+    if (!els.sensorPanel) return;
+    const show = !!state.model && isSensorLoad(state.loadType);
+    els.sensorPanel.hidden = !show;
+    if (!show) return;
+    const bridge = state.model.type === "bridge";
+    if (state.loadType === "current-sensor") {
+      els.sensorTitle.textContent = "电流传感器 · I–t 曲线（示意）";
+      els.sensorNote.textContent = bridge
+        ? "双液原电池：盐桥增大了内阻，电流较小，且随时间基本保持平稳。"
+        : "单液原电池：起始电流较大；同一溶液中易发生副反应/极化，电流随时间逐渐减小。";
+    } else {
+      els.sensorTitle.textContent = "温度传感器 · T–t 曲线（示意）";
+      els.sensorNote.textContent = bridge
+        ? "双液原电池：电流小，放热少，温度缓慢上升、升幅较小。"
+        : "单液原电池：电流较大，反应放热更明显，温度上升更快、更高，随后趋于平缓。";
+    }
+    if (!state.sensor.series.length) seedSensorSeries();
+    drawSensorChart();
+  }
+
+  function pushSensorSample(now) {
+    if (!state.model || !isSensorLoad(state.loadType) || !state.playing) return;
+    if (!state.sensor.lastNow) {
+      state.sensor.lastNow = now;
+      return;
+    }
+    const dt = Math.min(0.25, Math.max(0, (now - state.sensor.lastNow) / 1000));
+    state.sensor.lastNow = now;
+    if (dt <= 0) return;
+
+    state.sensor.elapsed += dt;
+    state.sensor.sampleAcc += dt;
+    // 约每 0.2 s 采一点；演示最长保留约 60 s
+    if (state.sensor.sampleAcc < 0.2) return;
+    state.sensor.sampleAcc = 0;
+
+    const v = sampleSensorValues(state.model.type, state.sensor.elapsed);
+    state.sensor.series.push({ t: state.sensor.elapsed, I: v.I, T: v.T });
+    while (state.sensor.series.length > 1 && state.sensor.series[state.sensor.series.length - 1].t - state.sensor.series[0].t > 60) {
+      state.sensor.series.shift();
+    }
+    updateSensorLive(v);
+    drawSensorChart();
+  }
+
+  function updateSensorLive(v) {
+    if (!v) return;
+    const led = $("#sensor-led");
+    if (state.loadType === "current-sensor") {
+      if (els.sensorLive) els.sensorLive.textContent = `I ≈ ${v.I.toFixed(2)}（相对）`;
+      const readout = $("#sensor-device-readout");
+      if (readout) readout.textContent = `I≈${v.I.toFixed(2)}`;
+      if (led) led.setAttribute("fill", "#27ae60");
+    } else if (state.loadType === "temp-sensor") {
+      if (els.sensorLive) els.sensorLive.textContent = `T ≈ ${v.T.toFixed(1)} ℃`;
+      const readout = $("#sensor-device-readout");
+      if (readout) readout.textContent = `T≈${v.T.toFixed(1)}℃`;
+      if (led) led.setAttribute("fill", "#e67e22");
+    }
+  }
+
+  function drawSensorChart() {
+    const canvas = els.sensorChart;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const W = canvas.width;
+    const H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, "#ffffff");
+    bg.addColorStop(1, "#f7fafb");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    const pad = { l: 62, r: 28, t: 30, b: 44 };
+    const plotW = W - pad.l - pad.r;
+    const plotH = H - pad.t - pad.b;
+
+    ctx.fillStyle = "rgba(255,255,255,0.7)";
+    ctx.fillRect(pad.l, pad.t, plotW, plotH);
+    ctx.strokeStyle = "#d5dde3";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(pad.l, pad.t, plotW, plotH);
+
+    const isI = state.loadType === "current-sensor";
+    const series = state.sensor.series;
+    const yLabel = isI ? "电流 I（相对示意）" : "温度 T / ℃（示意）";
+    const xLabel = "时间 t / s";
+
+    ctx.fillStyle = "#5a6a74";
+    ctx.font = '13px "Segoe UI", "Microsoft YaHei", sans-serif';
+    ctx.fillText(yLabel, pad.l, 18);
+    ctx.fillText(xLabel, W / 2 - 36, H - 12);
+
+    // 网格
+    ctx.strokeStyle = "#eef2f5";
+    for (let i = 1; i < 4; i++) {
+      const y = pad.t + (plotH * i) / 4;
+      ctx.beginPath();
+      ctx.moveTo(pad.l, y);
+      ctx.lineTo(pad.l + plotW, y);
+      ctx.stroke();
+      const x = pad.l + (plotW * i) / 4;
+      ctx.beginPath();
+      ctx.moveTo(x, pad.t);
+      ctx.lineTo(x, pad.t + plotH);
+      ctx.stroke();
+    }
+
+    // 固定坐标系，便于单液/双液对比（不随数据乱缩放）
+    const yMin = isI ? 0 : 24;
+    const yMax = isI ? 1.3 : 32;
+    // 横轴：从 0 起，随已录时间伸长，最短 15 s，避免前期全挤在左边
+    const tEnd = series.length ? series[series.length - 1].t : 0;
+    const tMax = Math.max(15, tEnd * 1.02);
+    const tMin = 0;
+
+    const xOf = (t) => pad.l + ((t - tMin) / (tMax - tMin)) * plotW;
+    const yOf = (val) => pad.t + plotH * (1 - (val - yMin) / (yMax - yMin));
+
+    ctx.fillStyle = "#7f8c8d";
+    ctx.font = '12px "Times New Roman", Times, serif';
+    ctx.fillText(String(yMax), 10, pad.t + 4);
+    ctx.fillText(String(yMin), 10, pad.t + plotH);
+    ctx.fillText("0", pad.l - 2, pad.t + plotH + 16);
+    ctx.fillText(tMax.toFixed(0), pad.l + plotW - 14, pad.t + plotH + 16);
+
+    // 双液电流参考带（示意“小电流区间”）
+    if (isI) {
+      ctx.fillStyle = "rgba(39, 174, 96, 0.1)";
+      ctx.fillRect(pad.l, yOf(0.35), plotW, yOf(0.18) - yOf(0.35));
+      ctx.fillStyle = "#27ae60";
+      ctx.font = '11px "Microsoft YaHei", sans-serif';
+      ctx.fillText("双液典型电流区", pad.l + 8, yOf(0.35) - 4);
+    }
+
+    if (!series.length) {
+      ctx.fillStyle = "#95a5a6";
+      ctx.font = '15px "Microsoft YaHei", sans-serif';
+      ctx.fillText("通电后将绘制实时曲线", pad.l + 60, pad.t + plotH / 2);
+      return;
+    }
+
+    // 曲线下方淡填色
+    if (series.length > 1) {
+      ctx.beginPath();
+      series.forEach((p, idx) => {
+        const val = isI ? p.I : p.T;
+        const x = xOf(p.t);
+        const y = yOf(val);
+        if (idx === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      const last = series[series.length - 1];
+      ctx.lineTo(xOf(last.t), pad.t + plotH);
+      ctx.lineTo(xOf(series[0].t), pad.t + plotH);
+      ctx.closePath();
+      ctx.fillStyle = isI ? "rgba(192, 57, 43, 0.08)" : "rgba(211, 84, 0, 0.08)";
+      ctx.fill();
+    }
+
+    ctx.beginPath();
+    ctx.strokeStyle = isI ? "#c0392b" : "#d35400";
+    ctx.lineWidth = 2.6;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    series.forEach((p, idx) => {
+      const val = isI ? p.I : p.T;
+      const x = xOf(p.t);
+      const y = yOf(val);
+      if (idx === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    const last = series[series.length - 1];
+    const lv = isI ? last.I : last.T;
+    ctx.fillStyle = isI ? "#c0392b" : "#d35400";
+    ctx.beginPath();
+    ctx.arc(xOf(last.t), yOf(lv), 4.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+
+  function drawStatic(model) {
+    const g = els.layerStatic;
+    clearLayer(g);
+    clearLayer(els.layerAnim);
+    if (els.layerFx) clearLayer(els.layerFx);
+    ensureSvgDefs();
+
+    const W = 900;
+    const H = 540;
+    els.svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    g.appendChild(el("rect", { x: 0, y: 0, width: W, height: H, fill: "url(#stage-bg)" }));
+    // 台面淡影，增加层次
+    g.appendChild(
+      el("ellipse", {
+        cx: W / 2,
+        cy: H - 28,
+        rx: 320,
+        ry: 18,
+        fill: "#1a242b",
+        opacity: 0.06,
+      })
+    );
+
+    const anodeIsLeft = model.anode.side === "left";
+
+    if (model.type === "bridge") {
+      const leftX = 70;
+      const rightX = 510;
+      const by = 210; // 杯口：导线全部在此上方
+      const bw = 260;
+      const bh = 230;
+      const elecTop = 118; // 电极顶端明显高于杯口
+      const elecBottom = by + 175;
+      const leftCx = leftX + bw / 2;
+      const rightCx = rightX + bw / 2;
+
+      const lb = beaker(leftX, by, bw, bh, model.left.sol.fill, model.left.sol.formula + "溶液");
+      const rb = beaker(rightX, by, bw, bh, model.right.sol.fill, model.right.sol.formula + "溶液");
+      g.appendChild(lb.g);
+      g.appendChild(rb.g);
+
+      const leftSign = anodeIsLeft ? "−" : "+";
+      const rightSign = anodeIsLeft ? "+" : "−";
+      g.appendChild(
+        electrodeBar(leftCx, elecTop, elecBottom, model.left.metal.color, model.left.metal.id, leftSign)
+      );
+      g.appendChild(
+        electrodeBar(rightCx, elecTop, elecBottom, model.right.metal.color, model.right.metal.id, rightSign)
+      );
+
+      // 盐桥：深灰倒 U，两端伸入液面，不挡上方导线
+      const sbLeft = leftX + bw - 36;
+      const sbRight = rightX + 36;
+      const sbTop = by - 28;
+      const sbDip = lb.liquidTop + 55;
+      g.appendChild(
+        el("path", {
+          d: `M${sbLeft} ${sbDip} L${sbLeft} ${sbTop} L${sbRight} ${sbTop} L${sbRight} ${sbDip}`,
+          fill: "none",
+          stroke: "#6b7c8d",
+          "stroke-width": 28,
+          "stroke-linejoin": "round",
+          "stroke-linecap": "butt",
+          opacity: 0.92,
+          filter: "url(#soft-shadow)",
+        })
+      );
+      g.appendChild(
+        el("path", {
+          d: `M${sbLeft} ${sbDip} L${sbLeft} ${sbTop} L${sbRight} ${sbTop} L${sbRight} ${sbDip}`,
+          fill: "none",
+          stroke: "#9aabba",
+          "stroke-width": 10,
+          "stroke-linejoin": "round",
+          opacity: 0.55,
+        })
+      );
+      g.appendChild(
+        el("path", {
+          d: `M${sbLeft} ${sbDip} L${sbLeft} ${sbTop} L${sbRight} ${sbTop} L${sbRight} ${sbDip}`,
+          fill: "none",
+          stroke: "#2c3e50",
+          "stroke-width": 2,
+        })
+      );
+      g.appendChild(
+        el("text", {
+          x: (sbLeft + sbRight) / 2,
+          y: sbTop - 12,
+          "text-anchor": "middle",
+          "font-size": 16,
+          "font-weight": 700,
+          fill: "#c0392b",
+        }, "盐桥")
+      );
+
+      // 导线最后画，保证在最上层、不穿模
+      const loadPos = drawWireAndLoad(
+        g,
+        { x: leftCx, y: elecTop },
+        { x: rightCx, y: elecTop },
+        model.anode.side
+      );
+
+      state.geom = {
+        type: "bridge",
+        leftElectrode: { x: leftCx, top: elecTop, bottom: elecBottom, liquidY: lb.liquidTop },
+        rightElectrode: { x: rightCx, top: elecTop, bottom: elecBottom, liquidY: rb.liquidTop },
+        leftBeaker: { x: leftX, y: by, w: bw, h: bh },
+        rightBeaker: { x: rightX, y: by, w: bw, h: bh },
+        meter: { x: loadPos.midX, y: loadPos.wireY },
+        wireY: loadPos.wireY,
+        salt: { left: { x: sbLeft, y: sbDip }, right: { x: sbRight, y: sbDip }, top: { x: (sbLeft + sbRight) / 2, y: sbTop } },
+        anodeSide: model.anode.side,
+        cathodeSide: model.cathode.side,
+      };
+    } else {
+      const bx = 220;
+      const by = 210;
+      const bw = 460;
+      const bh = 240;
+      const elecTop = 118;
+      const elecBottom = by + 185;
+      const leftCx = bx + 120;
+      const rightCx = bx + bw - 120;
+
+      const bk = beaker(bx, by, bw, bh, model.solution.fill, model.solution.formula);
+      g.appendChild(bk.g);
+      const leftSign = anodeIsLeft ? "−" : "+";
+      const rightSign = anodeIsLeft ? "+" : "−";
+      g.appendChild(
+        electrodeBar(leftCx, elecTop, elecBottom, model.left.metal.color, model.left.metal.id, leftSign)
+      );
+      g.appendChild(
+        electrodeBar(rightCx, elecTop, elecBottom, model.right.metal.color, model.right.metal.id, rightSign)
+      );
+
+      const loadPos = drawWireAndLoad(
+        g,
+        { x: leftCx, y: elecTop },
+        { x: rightCx, y: elecTop },
+        model.anode.side
+      );
+
+      state.geom = {
+        type: "single",
+        leftElectrode: { x: leftCx, top: elecTop, bottom: elecBottom, liquidY: bk.liquidTop },
+        rightElectrode: { x: rightCx, top: elecTop, bottom: elecBottom, liquidY: bk.liquidTop },
+        beaker: { x: bx, y: by, w: bw, h: bh },
+        meter: { x: loadPos.midX, y: loadPos.wireY },
+        wireY: loadPos.wireY,
+        anodeSide: model.anode.side,
+        cathodeSide: model.cathode.side,
+      };
+    }
+
+    // cathode phenomena placeholders
+    drawPhenomenaStatic(model);
+  }
+
+  function cathodeEffectKind(model) {
+    const sol = model.type === "bridge" ? model.cathode.sol : model.solution;
+    if (sol.acid) return "bubbles";
+    if (sol.deposit === "Cu") return "copper";
+    if (sol.deposit === "Ag") return "silver";
+    if (sol.deposit && sol.deposit !== "H2") return "plate";
+    return "none";
+  }
+
+  function drawPhenomenaStatic(model) {
+    if (!els.layerFx) return;
+    clearLayer(els.layerFx);
+    const geom = state.geom;
+    const c = model.cathode.side === "left" ? geom.leftElectrode : geom.rightElectrode;
+    const kind = cathodeEffectKind(model);
+    const plateH = Math.max(50, c.bottom - c.liquidY - 40);
+    const plateY = c.liquidY + 12;
+
+    if (kind === "copper" || kind === "silver" || kind === "plate") {
+      const fill = kind === "copper" ? "#c0392b" : "#aeb6bf";
+      // 左右两侧都附着一层，示意金属析出包覆电极
+      ["deposit-plate-l", "deposit-plate-r"].forEach((id, idx) => {
+        const plate = el("rect", {
+          id,
+          x: idx === 0 ? c.x - 18 : c.x + 18,
+          y: plateY,
+          width: 0,
+          height: plateH,
+          fill,
+          opacity: 0.9,
+          rx: 1,
+        });
+        els.layerFx.appendChild(plate);
+      });
+      els.layerFx.appendChild(
+        el("text", {
+          id: "deposit-label",
+          x: c.x + 42,
+          y: plateY + 18,
+          "font-size": 12,
+          fill: kind === "copper" ? "#922b21" : "#566573",
+          "font-weight": 700,
+          opacity: 0,
+        }, kind === "copper" ? "红色 Cu 附着" : "金属附着")
+      );
+    }
+
+    if (kind === "bubbles") {
+      for (let i = 0; i < 8; i++) {
+        els.layerFx.appendChild(
+          el("circle", {
+            class: "h2-bubble",
+            cx: c.x + (i % 2 === 0 ? -14 : 14),
+            cy: c.liquidY + 100,
+            r: 2.5 + (i % 3),
+            fill: "#e8e8e8",
+            stroke: "#95a5a6",
+            "stroke-width": 1,
+            opacity: 0,
+            "data-i": i,
+          })
+        );
+      }
+      els.layerFx.appendChild(
+        el("text", {
+          id: "bubble-label",
+          x: c.x + 38,
+          y: c.liquidY + 28,
+          "font-size": 12,
+          fill: "#5d6d7e",
+          "font-weight": 700,
+          opacity: 0,
+        }, "H₂↑ 冒气泡")
+      );
+    }
+  }
+
+  function updateLoadVisual(on) {
+    const needle = $("#meter-needle");
+    const bulb = $("#bulb-glass");
+    const blades = $("#fan-blades");
+    const iLabel = $("#current-arrow-label");
+    const geom = state.geom;
+    if (!geom || !state.model) return;
+
+    if (needle) {
+      const mid = geom.meter.x;
+      const cy = geom.meter.y;
+      if (!on) {
+        // 暂停/未通电：指针严格回零（竖直向上）
+        needle.setAttribute("x1", mid);
+        needle.setAttribute("y1", cy);
+        needle.setAttribute("x2", mid);
+        needle.setAttribute("y2", cy - 18);
+      } else {
+        // 电流方向：外电路正极 → 负极（与 e⁻ 相反）
+        // 正极在右 → 电流向左 → 指针偏左
+        const currentToRight = state.model.cathode.side === "left";
+        const ang = currentToRight ? 42 : -42; // 相对竖直方向的偏转角
+        const rad = (ang * Math.PI) / 180;
+        const len = 18;
+        needle.setAttribute("x1", mid);
+        needle.setAttribute("y1", cy);
+        needle.setAttribute("x2", mid + Math.sin(rad) * len);
+        needle.setAttribute("y2", cy - Math.cos(rad) * len);
+      }
+    }
+    if (iLabel) iLabel.setAttribute("opacity", on && state.loadType === "ammeter" ? "1" : "0");
+    if (bulb) {
+      bulb.setAttribute("fill", on ? "#ffe566" : "#f5f5f5");
+      bulb.setAttribute("filter", on ? "url(#glow)" : "");
+      bulb.setAttribute("opacity", on ? "1" : "0.92");
+    }
+    if (blades) {
+      blades.dataset.spin = on ? "1" : "0";
+      if (!on) {
+        const mid = geom.meter;
+        blades.setAttribute("transform", `translate(${mid.x},${mid.y}) rotate(0)`);
+      }
+    }
+    const led = $("#sensor-led");
+    if (led && !on) led.setAttribute("fill", "#bdc3c7");
+
+    const defs = $("#svg-defs");
+    if (defs && !$("#glow")) {
+      const f = el("filter", { id: "glow", x: "-50%", y: "-50%", width: "200%", height: "200%" });
+      f.appendChild(el("feGaussianBlur", { stdDeviation: "4", result: "b" }));
+      const m = el("feMerge");
+      m.appendChild(el("feMergeNode", { in: "b" }));
+      m.appendChild(el("feMergeNode", { in: "SourceGraphic" }));
+      f.appendChild(m);
+      defs.appendChild(f);
+    }
+  }
+
+  function updatePhenomena(t) {
+    if (!state.playing || !state.model) return;
+    const kind = cathodeEffectKind(state.model);
+    const c =
+      state.model.cathode.side === "left"
+        ? state.geom.leftElectrode
+        : state.geom.rightElectrode;
+
+    if (kind === "bubbles") {
+      const bubbles = els.layerFx.querySelectorAll(".h2-bubble");
+      const label = $("#bubble-label");
+      if (label) label.setAttribute("opacity", "1");
+      bubbles.forEach((b, i) => {
+        const phase = (t * 0.4 + i * 0.12) % 1;
+        const baseY = c.liquidY + 95;
+        const r = 2.2 + (i % 3) + phase * 2.2;
+        b.setAttribute("opacity", String(0.2 + 0.75 * (1 - phase)));
+        b.setAttribute("r", String(r));
+        b.setAttribute("cy", String(baseY - phase * 85));
+        b.setAttribute("cx", String(c.x + (i % 2 === 0 ? -14 : 14) + Math.sin(phase * 6) * 3));
+      });
+    }
+    if (kind === "copper" || kind === "silver" || kind === "plate") {
+      const grow = Math.min(9, 1.5 + t * 1.2);
+      const pl = $("#deposit-plate-l");
+      const pr = $("#deposit-plate-r");
+      const label = $("#deposit-label");
+      if (pl) {
+        pl.setAttribute("width", String(grow));
+        pl.setAttribute("x", String(c.x - 18 - grow));
+      }
+      if (pr) pr.setAttribute("width", String(grow));
+      if (label) label.setAttribute("opacity", "1");
+    }
+  }
+
+  function ionRadius(label) {
+    return ION_R[label] || 10;
+  }
+  function ionColor(label) {
+    return ION_COLOR[label] || "#7f8c8d";
+  }
+
+  function rebuildParticles() {
+    const model = state.model;
+    const geom = state.geom;
+    if (!model || !geom) return;
+    clearLayer(els.layerAnim);
+    state.particles = [];
+
+    const anodeIsLeft = model.anode.side === "left";
+    const a = anodeIsLeft ? geom.leftElectrode : geom.rightElectrode;
+    const c = anodeIsLeft ? geom.rightElectrode : geom.leftElectrode;
+    const wireY = geom.wireY;
+
+    if (state.showElectrons) {
+      for (let i = 0; i < 8; i++) {
+        state.particles.push({
+          kind: "e",
+          label: "e⁻",
+          phase: i / 8,
+          path: [
+            { x: a.x, y: a.top },
+            { x: a.x, y: wireY },
+            { x: (a.x + c.x) / 2, y: wireY },
+            { x: c.x, y: wireY },
+            { x: c.x, y: c.top },
+          ],
+        });
+      }
+    }
+
+    if (state.showIons) {
+      if (model.type === "bridge") {
+        const aBeaker = anodeIsLeft ? geom.leftBeaker : geom.rightBeaker;
+        const cBeaker = anodeIsLeft ? geom.rightBeaker : geom.leftBeaker;
+        const aIon = model.anode.metal.id === "Ag" ? "Ag⁺" : model.anode.metal.id + "²⁺";
+        const cIon = model.cathode.sol.cation;
+
+        for (let i = 0; i < 5; i++) {
+          state.particles.push({
+            kind: "ion",
+            label: aIon,
+            phase: i / 5,
+            path: [
+              { x: a.x, y: a.liquidY + 30 },
+              { x: aBeaker.x + 50 + (i % 3) * 16, y: a.liquidY + 70 },
+              { x: aBeaker.x + 60, y: aBeaker.y + 140 },
+            ],
+          });
+          state.particles.push({
+            kind: "ion",
+            label: cIon,
+            phase: i / 5,
+            path: [
+              { x: cBeaker.x + 55 + (i % 3) * 14, y: cBeaker.y + 150 },
+              { x: c.x + (anodeIsLeft ? -20 : 20), y: c.liquidY + 60 },
+              { x: c.x, y: c.liquidY + 40 },
+            ],
+          });
+        }
+        // 盐桥离子：只出不进——从桥内中段发出，分别迁出到负极/正极池，不对向贯通
+        const { left, right, top } = geom.salt;
+        const anodeDip = anodeIsLeft ? left : right;
+        const cathodeDip = anodeIsLeft ? right : left;
+        const aTowardX = aBeaker.x + aBeaker.w * 0.38;
+        const cTowardX = cBeaker.x + cBeaker.w * 0.62;
+        const saltExitPath = (exitDip, towardX, lane) => {
+          const yTop = top.y + lane;
+          const exitX = exitDip.x + lane * 0.2;
+          // 起点略偏向出口一侧，两侧各走各的竖管，不对向交叉
+          const spawnX = top.x + (exitX - top.x) * 0.2;
+          return [
+            { x: spawnX, y: yTop },
+            { x: (spawnX + exitX) / 2, y: yTop },
+            { x: exitX, y: yTop },
+            { x: exitX, y: yTop + (exitDip.y - yTop) * 0.45 },
+            { x: exitX, y: exitDip.y },
+            { x: towardX, y: exitDip.y + 26 },
+            { x: towardX + (towardX - exitX) * 0.25, y: exitDip.y + 52 },
+          ];
+        };
+        for (let i = 0; i < 5; i++) {
+          state.particles.push({
+            kind: "ion",
+            role: "salt-exit",
+            label: "Cl⁻",
+            phase: i / 5,
+            path: saltExitPath(anodeDip, aTowardX, -3.5 + (i % 2) * 0.8),
+          });
+          state.particles.push({
+            kind: "ion",
+            role: "salt-exit",
+            label: "K⁺",
+            phase: (i + 0.45) / 5,
+            path: saltExitPath(cathodeDip, cTowardX, 3.5 - (i % 2) * 0.8),
+          });
+        }
+      } else {
+        const aIon = model.anode.metal.id + "²⁺";
+        const toward = model.flows.mode === "acid" ? "H⁺" : model.flows.depositIon;
+        for (let i = 0; i < 5; i++) {
+          state.particles.push({
+            kind: "ion",
+            label: aIon,
+            phase: i / 5,
+            path: [
+              { x: a.x, y: a.liquidY + 40 },
+              { x: a.x + (anodeIsLeft ? 45 : -45), y: a.liquidY + 90 },
+              { x: geom.beaker.x + geom.beaker.w / 2, y: geom.beaker.y + 160 },
+            ],
+          });
+          state.particles.push({
+            kind: "ion",
+            label: toward,
+            phase: i / 5,
+            path: [
+              { x: geom.beaker.x + geom.beaker.w / 2, y: geom.beaker.y + 170 },
+              { x: c.x + (anodeIsLeft ? -28 : 28), y: c.liquidY + 80 },
+              { x: c.x, y: c.liquidY + 45 },
+            ],
+          });
+          state.particles.push({
+            kind: "ion",
+            label: model.solution.anion,
+            phase: (i + 0.3) / 5,
+            path: [
+              { x: geom.beaker.x + geom.beaker.w / 2 + 30, y: geom.beaker.y + 155 },
+              { x: a.x + (anodeIsLeft ? 30 : -30), y: a.liquidY + 100 },
+              { x: a.x + (anodeIsLeft ? 22 : -22), y: a.liquidY + 70 },
+            ],
+          });
+        }
+      }
+    }
+
+    ensureSvgDefs();
+    state.particles.forEach((p) => {
+      const node = makeParticleNode(p);
+      p.node = node;
+      els.layerAnim.appendChild(node);
+      const pt = samplePath(p.path, 0);
+      node.setAttribute("transform", `translate(${pt.x},${pt.y})`);
+      node.setAttribute("opacity", "0");
+    });
+  }
+
+  function particleFade(p, u) {
+    if (p.role === "salt-exit") {
+      // 桥内清晰，出管口后在溶液中逐渐消散（强调“只出”）
+      if (u < 0.05) return u / 0.05;
+      if (u < 0.58) return 1;
+      return Math.max(0, 1 - (u - 0.58) / 0.42);
+    }
+    if (u < 0.08) return u / 0.08;
+    if (u > 0.88) return Math.max(0, 1 - (u - 0.88) / 0.12);
+    return 1;
+  }
+
+  function samplePath(pts, t) {
+    if (pts.length === 1) return pts[0];
+    const segs = pts.length - 1;
+    const x = t * segs;
+    const i = Math.min(Math.floor(x), segs - 1);
+    const local = x - i;
+    const a = pts[i];
+    const b = pts[i + 1];
+    return { x: a.x + (b.x - a.x) * local, y: a.y + (b.y - a.y) * local };
+  }
+
+  function play() {
+    if (!state.model) return;
+    if (state.playing) return;
+    state.playing = true;
+    state.t0 = performance.now();
+    state.sensor.lastNow = performance.now();
+    updateLoadVisual(true);
+    syncSensorPanel();
+    let fanAngle = 0;
+    const loop = (now) => {
+      if (!state.playing) return;
+      const t = ((now - state.t0) / 1000) * 0.22;
+      state.particles.forEach((p) => {
+        const u = (t + p.phase) % 1;
+        const pt = samplePath(p.path, u);
+        const pulse = 1 + 0.05 * Math.sin((t + p.phase) * Math.PI * 2);
+        const scale =
+          p.kind === "e"
+            ? pulse
+            : p.role === "salt-exit"
+              ? 1 + 0.04 * Math.sin((t + p.phase) * Math.PI * 2)
+              : 1 + 0.03 * Math.sin((t + p.phase) * Math.PI * 2);
+        // 盐桥离子出管后略放大，像溶入溶液
+        const exitBoost = p.role === "salt-exit" && u > 0.62 ? 1 + (u - 0.62) * 0.35 : 1;
+        p.node.setAttribute(
+          "transform",
+          `translate(${pt.x},${pt.y}) scale(${(scale * exitBoost).toFixed(3)})`
+        );
+        const fade = particleFade(p, u);
+        p.node.setAttribute("opacity", String(0.28 + 0.72 * fade));
+      });
+      updatePhenomena(t);
+      pushSensorSample(now);
+      const blades = $("#fan-blades");
+      if (blades && blades.dataset.spin === "1") {
+        fanAngle = (fanAngle + 8) % 360;
+        const mid = state.geom.meter;
+        blades.setAttribute("transform", `translate(${mid.x},${mid.y}) rotate(${fanAngle})`);
+      }
+      state.raf = requestAnimationFrame(loop);
+    };
+    state.raf = requestAnimationFrame(loop);
+  }
+
+  function pause() {
+    state.playing = false;
+    if (state.raf) cancelAnimationFrame(state.raf);
+    state.raf = null;
+    state.sensor.lastNow = 0;
+    updateLoadVisual(false);
+  }
+
+  function resetAnim() {
+    pause();
+    resetSensorSeries();
+    if (state.model) {
+      drawPhenomenaStatic(state.model);
+      rebuildParticles();
+      updateLoadVisual(false);
+      syncSensorPanel();
+    }
+  }
+
+  initControls();
+})();
+
+</script>
+</body>
+</html>
